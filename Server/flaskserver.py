@@ -14,6 +14,9 @@ DB_NAME = 'MovieDB'
 DB_USER = 'yahir'
 DB_PASSWORD = '123'
 
+"""
+What Im using to connect to the postgres database
+"""
 def connect_to_db():
     return psycopg2.connect(host=DB_HOST, database=DB_NAME, port=8888, user=DB_USER, password=DB_PASSWORD)
 
@@ -26,9 +29,15 @@ def data():
     if not request.is_json:
         return jsonify({'error': 'Query is not in valid JSON format'})
 
+    """
+    Debugging purposes
+    """
     print("Received JSON:", request.get_json())
 
     try:
+        """
+        Grabs the json if its valid, will connect to the postgres database
+        """
         json = request.get_json()
         type = json.get('type')
         query1 = json.get('query')
@@ -36,6 +45,9 @@ def data():
         cursor = connection.cursor()
         cursor.execute(query1)
 
+        """
+        Will check to see if the query is SELECT, then jsonify the appropriate response based on the query
+        """
         if type == 'select':
             data = cursor.fetchall()
             column_names = [desc[0] for desc in cursor.description]
@@ -46,12 +58,18 @@ def data():
             connection.close()
             return jsonify(result)
 
+
         elif type in ('insert', 'update', 'delete'):
+            """
+            These are the types on admins can use, will send the query to the DB and send out a success response
+            """
+
             connection.commit()
             item = cursor.rowcount
             cursor.close()
             connection.close()
             return jsonify({
+
                 'status': 'Success!',
                 'type': type,
                 'rows_affected': item
