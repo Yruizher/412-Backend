@@ -5,6 +5,7 @@ Our Flask router for running the backend and sending out JSON
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import psycopg2
+from psycopg2 import pool
 
 app = Flask(__name__)
 CORS(app)
@@ -17,8 +18,7 @@ DB_PASSWORD = '123'
 """
 What Im using to connect to the postgres database
 """
-def connect_to_db():
-    return psycopg2.connect(host=DB_HOST, database=DB_NAME, port=8888, user=DB_USER, password=DB_PASSWORD)
+dbPool = psycopg2.pool.SimpleConnectionPool(1, 5, host=DB_HOST,dbname=DB_NAME, user=DB_USER, password=DB_PASSWORD, port= 8888)
 
 @app.route('/data', methods=['POST'])
 def data():
@@ -41,7 +41,7 @@ def data():
         json = request.get_json()
         type = json.get('type')
         query1 = json.get('query')
-        connection = connect_to_db()
+        connection = dbPool.getconn()
         cursor = connection.cursor()
         cursor.execute(query1)
 
@@ -55,7 +55,7 @@ def data():
             result = [dict(zip(column_names, row)) for row in data]
 
             cursor.close()
-            connection.close()
+            dbPool.putconn(connection)
             return jsonify(result)
 
 
