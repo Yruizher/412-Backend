@@ -18,7 +18,7 @@ DB_PASSWORD = '123'
 """
 What Im using to connect to the postgres database
 """
-dbPool = psycopg2.pool.SimpleConnectionPool(1, 5, host=DB_HOST,dbname=DB_NAME, user=DB_USER, password=DB_PASSWORD, port= 8888)
+dbPool = psycopg2.pool.SimpleConnectionPool(1, 20, host=DB_HOST,dbname=DB_NAME, user=DB_USER, password=DB_PASSWORD, port= 8888)
 
 @app.route('/data', methods=['POST'])
 def data():
