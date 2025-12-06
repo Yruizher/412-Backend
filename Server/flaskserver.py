@@ -2,7 +2,7 @@
 Our Flask router for running the backend and sending out JSON
 """
 
-from flask import Flask, request, redirect, url_for, jsonify
+from flask import Flask, request, jsonify
 from flask_cors import CORS
 import psycopg2
 
